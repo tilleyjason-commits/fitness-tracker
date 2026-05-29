@@ -7,6 +7,7 @@ export interface Exercise {
 export interface SetRecord {
   reps: number;
   weight: number;
+  rir: number | null;
   completed: boolean;
 }
 

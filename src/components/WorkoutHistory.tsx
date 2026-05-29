@@ -37,6 +37,7 @@ export function WorkoutHistory({ history }: Props) {
                     <strong>{workoutExercise.exercise.name}</strong>
                     <span>
                       {workoutExercise.targetSets} × {workoutExercise.targetReps} reps · {workoutExercise.targetWeight ?? 0} lb
+                      {workoutExercise.sets.some(set => set.rir !== null) && ` · RIR ${workoutExercise.sets.find(set => set.rir !== null)?.rir}`}
                     </span>
                   </li>
                 ))}
