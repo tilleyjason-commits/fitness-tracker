@@ -3,7 +3,7 @@ import { EXERCISES, MUSCLE_GROUPS } from '../data/exercises';
 import type { Exercise } from '../types';
 
 interface Props {
-  onAdd: (exercise: Exercise, sets: number, reps: number) => void;
+  onAdd: (exercise: Exercise, sets: number, reps: number, weight: number) => void;
 }
 
 export function ExerciseSelector({ onAdd }: Props) {
@@ -11,12 +11,13 @@ export function ExerciseSelector({ onAdd }: Props) {
   const [selected, setSelected] = useState<Exercise | null>(null);
   const [sets, setSets] = useState(3);
   const [reps, setReps] = useState(10);
+  const [weight, setWeight] = useState(50);
 
   const filtered = EXERCISES.filter(e => e.muscleGroup === group);
 
   function handleAdd() {
     if (!selected) return;
-    onAdd(selected, sets, reps);
+    onAdd(selected, sets, reps, weight);
     setSelected(null);
   }
 
@@ -64,6 +65,14 @@ export function ExerciseSelector({ onAdd }: Props) {
               <button onClick={() => setReps(r => Math.max(1, r - 1))}>−</button>
               <span>{reps}</span>
               <button onClick={() => setReps(r => Math.min(100, r + 1))}>+</button>
+            </div>
+          </div>
+          <div className="num-input-group">
+            <label>Weight</label>
+            <div className="num-input">
+              <button onClick={() => setWeight(w => Math.max(0, w - 5))}>−</button>
+              <span>{weight} lb</span>
+              <button onClick={() => setWeight(w => Math.min(999, w + 5))}>+</button>
             </div>
           </div>
           <button className="add-btn" onClick={handleAdd}>
