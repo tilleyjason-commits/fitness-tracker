@@ -93,8 +93,8 @@ export default function App() {
           onClearWorkout={clearWorkout}
           onLogWorkout={handleLogWorkout}
         />
-        <WorkoutHistory history={history} />
         <RestTimer />
+        <WorkoutHistory history={history} />
       </main>
     </div>
   );
