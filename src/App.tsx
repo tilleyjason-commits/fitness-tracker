@@ -1,9 +1,11 @@
 import { useCallback } from 'react';
 import { ExerciseSelector } from './components/ExerciseSelector';
 import { WorkoutTracker } from './components/WorkoutTracker';
+import { WorkoutHistory } from './components/WorkoutHistory';
 import { RestTimer } from './components/RestTimer';
 import { useLocalStorage } from './hooks/useLocalStorage';
-import type { WorkoutState, Exercise } from './types';
+import { createWorkoutExercise, getWorkoutTotals, logWorkout } from './workoutLog';
+import type { WorkoutState, Exercise, WorkoutHistoryEntry } from './types';
 import './App.css';
 
 const today = new Date().toISOString().slice(0, 10);
@@ -11,22 +13,18 @@ const INITIAL: WorkoutState = { exercises: [], date: today };
 
 export default function App() {
   const [workout, setWorkout] = useLocalStorage<WorkoutState>('fitness-tracker-workout', INITIAL);
+  const [history, setHistory] = useLocalStorage<WorkoutHistoryEntry[]>('fitness-tracker-history', []);
 
   const currentWorkout = workout.date === today ? workout : INITIAL;
 
-  const addExercise = useCallback((exercise: Exercise, sets: number, reps: number) => {
+  const addExercise = useCallback((exercise: Exercise, sets: number, reps: number, weight: number) => {
     setWorkout(prev => {
       const base = prev.date === today ? prev : INITIAL;
       return {
         ...base,
         exercises: [
           ...base.exercises,
-          {
-            exercise,
-            targetSets: sets,
-            targetReps: reps,
-            sets: Array.from({ length: sets }, () => ({ reps, completed: false })),
-          },
+          createWorkoutExercise(exercise, sets, reps, weight),
         ],
       };
     });
@@ -58,8 +56,12 @@ export default function App() {
     setWorkout({ exercises: [], date: today });
   }, [setWorkout]);
 
-  const totalSets = currentWorkout.exercises.reduce((a, e) => a + e.sets.length, 0);
-  const completedSets = currentWorkout.exercises.reduce((a, e) => a + e.sets.filter(s => s.completed).length, 0);
+  const handleLogWorkout = useCallback(() => {
+    setHistory(prev => logWorkout(currentWorkout, prev));
+    setWorkout({ exercises: [], date: today });
+  }, [currentWorkout, setHistory, setWorkout]);
+
+  const { totalSets, completedSets } = getWorkoutTotals(currentWorkout);
 
   return (
     <div className="app">
@@ -84,7 +86,9 @@ export default function App() {
           onToggleSet={toggleSet}
           onRemoveExercise={removeExercise}
           onClearWorkout={clearWorkout}
+          onLogWorkout={handleLogWorkout}
         />
+        <WorkoutHistory history={history} />
         <RestTimer />
       </main>
     </div>

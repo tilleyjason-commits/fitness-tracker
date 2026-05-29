@@ -5,9 +5,10 @@ interface Props {
   onToggleSet: (exIdx: number, setIdx: number) => void;
   onRemoveExercise: (exIdx: number) => void;
   onClearWorkout: () => void;
+  onLogWorkout: () => void;
 }
 
-export function WorkoutTracker({ exercises, onToggleSet, onRemoveExercise, onClearWorkout }: Props) {
+export function WorkoutTracker({ exercises, onToggleSet, onRemoveExercise, onClearWorkout, onLogWorkout }: Props) {
   if (exercises.length === 0) {
     return (
       <div className="empty-workout">
@@ -21,7 +22,10 @@ export function WorkoutTracker({ exercises, onToggleSet, onRemoveExercise, onCle
     <div className="workout-tracker">
       <div className="tracker-header">
         <h2 className="section-title">Today's Workout</h2>
-        <button className="clear-btn" onClick={onClearWorkout}>Clear All</button>
+        <div className="tracker-actions">
+          <button className="log-btn" onClick={onLogWorkout}>Log Workout</button>
+          <button className="clear-btn" onClick={onClearWorkout}>Clear All</button>
+        </div>
       </div>
 
       {exercises.map((we, exIdx) => {
@@ -33,7 +37,9 @@ export function WorkoutTracker({ exercises, onToggleSet, onRemoveExercise, onCle
             <div className="exercise-card-header">
               <div>
                 <span className="exercise-card-name">{we.exercise.name}</span>
-                <span className="exercise-card-meta">{we.targetSets} × {we.targetReps} reps</span>
+                <span className="exercise-card-meta">
+                  {we.targetSets} × {we.targetReps} reps · {we.targetWeight ?? 0} lb
+                </span>
               </div>
               <div className="exercise-card-actions">
                 <span className="set-progress">{completedCount}/{we.sets.length}</span>
@@ -51,6 +57,7 @@ export function WorkoutTracker({ exercises, onToggleSet, onRemoveExercise, onCle
                 >
                   <span className="set-num">Set {setIdx + 1}</span>
                   <span className="set-reps">{set.reps} reps</span>
+                  <span className="set-weight">{set.weight ?? we.targetWeight ?? 0} lb</span>
                   {set.completed && <span className="check">✓</span>}
                 </button>
               ))}
