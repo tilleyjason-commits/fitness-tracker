@@ -24,3 +24,13 @@ npm run dev
 npm run lint
 npm run build
 ```
+
+## Mobile Install
+
+The app is configured as a Progressive Web App for GitHub Pages.
+
+1. Open the GitHub Pages URL on your phone.
+2. On iPhone Safari: Share → Add to Home Screen.
+3. On Android Chrome: Menu → Install app or Add to Home screen.
+
+After the first load, the app shell is cached for offline use.

@@ -1,0 +1,19 @@
+{
+  "name": "Fitness Tracker",
+  "short_name": "FitTrack",
+  "description": "Track machine exercises, sets, reps, and rest times.",
+  "start_url": "/fitness-tracker/",
+  "scope": "/fitness-tracker/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f172a",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "/fitness-tracker/app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
