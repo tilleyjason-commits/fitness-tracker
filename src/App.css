@@ -9,9 +9,10 @@
   position: sticky;
   top: 0;
   z-index: 10;
-  background: var(--bg);
+  background: rgba(5, 8, 6, 0.88);
   border-bottom: 1px solid var(--border);
-  padding: 12px 16px;
+  padding: 14px 16px;
+  backdrop-filter: blur(16px);
 }
 
 .header-inner {
@@ -21,10 +22,11 @@
 }
 
 .app-title {
-  font-size: 22px;
-  font-weight: 800;
-  letter-spacing: -0.5px;
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: -0.7px;
   color: var(--accent);
+  text-shadow: var(--glow);
   flex-shrink: 0;
 }
 
@@ -66,9 +68,20 @@
 
 /* ── Section titles ── */
 .section-title {
-  font-size: 17px;
-  font-weight: 700;
+  font-size: 18px;
+  font-weight: 800;
   color: var(--text-h);
+  letter-spacing: -0.3px;
+}
+
+.eyebrow {
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 2px;
 }
 
 /* ── Cards ── */
@@ -76,7 +89,7 @@
 .workout-tracker,
 .workout-history,
 .rest-timer {
-  background: var(--card-bg);
+  background: linear-gradient(180deg, rgba(18, 26, 20, 0.96), rgba(9, 13, 10, 0.96));
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 18px;
@@ -95,7 +108,7 @@
   padding: 5px 12px;
   border-radius: 99px;
   border: 1.5px solid var(--border);
-  background: transparent;
+  background: rgba(183, 255, 60, 0.04);
   color: var(--text);
   font-size: 13px;
   font-weight: 500;
@@ -210,7 +223,7 @@
   margin-left: auto;
   padding: 9px 18px;
   background: var(--accent);
-  color: #fff;
+  color: #071007;
   border: none;
   border-radius: var(--radius-sm);
   font-size: 14px;
@@ -255,7 +268,7 @@
 
 .log-btn:hover {
   background: var(--success);
-  color: #fff;
+  color: #071007;
 }
 
 .clear-btn {
@@ -295,7 +308,13 @@
   border-radius: var(--radius);
   padding: 14px;
   margin-bottom: 12px;
-  transition: border-color 0.2s;
+  background: rgba(255, 255, 255, 0.025);
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+
+.exercise-card:hover {
+  border-color: rgba(183, 255, 60, 0.35);
+  box-shadow: var(--glow);
 }
 
 .exercise-card:last-child {
@@ -313,6 +332,26 @@
   justify-content: space-between;
   margin-bottom: 12px;
   gap: 8px;
+}
+
+.exercise-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.exercise-number {
+  display: inline-flex;
+  width: 30px;
+  height: 30px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #071007;
+  font-size: 14px;
+  font-weight: 900;
+  box-shadow: var(--glow);
 }
 
 .exercise-card-name {
@@ -365,7 +404,7 @@
 /* ── Set bubbles ── */
 .sets-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
   gap: 8px;
 }
 
@@ -373,24 +412,26 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   gap: 2px;
-  padding: 10px 6px;
+  padding: 12px;
   border: 2px solid var(--border);
   border-radius: var(--radius-sm);
-  background: var(--bg);
-  transition: border-color 0.15s, background 0.15s, transform 0.1s;
-  min-height: 62px;
+  background: linear-gradient(180deg, rgba(255,255,255,.045), rgba(183,255,60,.035));
+  color: var(--text);
+  transition: border-color 0.15s, background 0.15s, transform 0.1s, box-shadow 0.15s;
+  min-height: 92px;
 }
 
 .set-bubble:hover {
   border-color: var(--accent);
+  box-shadow: var(--glow);
   transform: translateY(-1px);
 }
 
 .set-bubble.completed {
-  background: var(--success-bg);
+  background: linear-gradient(180deg, rgba(183,255,60,.18), rgba(183,255,60,.08));
   border-color: var(--success);
 }
 
@@ -410,11 +451,13 @@
 
 .set-bubble.completed .set-num,
 .set-bubble.completed .set-reps,
-.set-bubble.completed .set-weight {
+.set-bubble.completed .set-weight,
+.set-bubble.completed .set-rir {
   color: var(--success-dark);
 }
 
-.set-weight {
+.set-weight,
+.set-rir {
   font-size: 12px;
   font-weight: 600;
   color: var(--text);
@@ -427,6 +470,62 @@
   font-size: 12px;
   color: var(--success);
   font-weight: 700;
+}
+
+.set-logger {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.58);
+  backdrop-filter: blur(8px);
+}
+
+.set-logger-card {
+  width: min(100%, 520px);
+  padding: 18px;
+  border: 1px solid rgba(183, 255, 60, 0.26);
+  border-radius: 22px;
+  background: linear-gradient(180deg, #172017, #080d09);
+  box-shadow: 0 -10px 48px rgba(0,0,0,.55), var(--glow);
+}
+
+.set-logger-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.set-logger-header h3 {
+  font-size: 18px;
+}
+
+.set-logger-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.num-input.compact span {
+  min-width: 42px;
+}
+
+.logger-submit {
+  width: 100%;
+  margin-top: 16px;
+  margin-left: 0;
+  box-shadow: var(--glow);
+}
+
+@media (max-width: 420px) {
+  .set-logger-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ── Workout history ── */
@@ -538,7 +637,7 @@
   padding: 6px 14px;
   border-radius: 99px;
   border: 1.5px solid var(--border);
-  background: transparent;
+  background: rgba(183, 255, 60, 0.04);
   color: var(--text);
   font-size: 13px;
   font-weight: 600;
@@ -572,7 +671,7 @@
 
 .timer-btn.start {
   background: var(--success);
-  color: #fff;
+  color: #071007;
 }
 
 .timer-btn.start:hover:not(:disabled) {

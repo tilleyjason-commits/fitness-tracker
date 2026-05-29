@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createWorkoutExercise, logWorkout } from './workoutLog';
+import { createWorkoutExercise, logWorkout, updateSetRecord } from './workoutLog';
 import type { Exercise, WorkoutHistoryEntry, WorkoutState } from './types';
 
 const exercise: Exercise = {
@@ -14,10 +14,25 @@ describe('createWorkoutExercise', () => {
 
     expect(workoutExercise.targetWeight).toBe(85);
     expect(workoutExercise.sets).toEqual([
-      { reps: 10, weight: 85, completed: false },
-      { reps: 10, weight: 85, completed: false },
-      { reps: 10, weight: 85, completed: false },
+      { reps: 10, weight: 85, rir: null, completed: false },
+      { reps: 10, weight: 85, rir: null, completed: false },
+      { reps: 10, weight: 85, rir: null, completed: false },
     ]);
+  });
+});
+
+describe('updateSetRecord', () => {
+  it('updates reps, weight, RIR, and marks the set completed without mutating other sets', () => {
+    const workout: WorkoutState = {
+      date: '2026-05-29',
+      exercises: [createWorkoutExercise(exercise, 2, 10, 85)],
+    };
+
+    const updated = updateSetRecord(workout, 0, 0, { reps: 9, weight: 90, rir: 2 });
+
+    expect(updated.exercises[0].sets[0]).toEqual({ reps: 9, weight: 90, rir: 2, completed: true });
+    expect(updated.exercises[0].sets[1]).toEqual({ reps: 10, weight: 85, rir: null, completed: false });
+    expect(workout.exercises[0].sets[0]).toEqual({ reps: 10, weight: 85, rir: null, completed: false });
   });
 });
 
@@ -32,8 +47,8 @@ describe('logWorkout', () => {
           targetReps: 8,
           targetWeight: 90,
           sets: [
-            { reps: 8, weight: 90, completed: true },
-            { reps: 8, weight: 90, completed: false },
+            { reps: 8, weight: 90, rir: 1, completed: true },
+            { reps: 8, weight: 90, rir: null, completed: false },
           ],
         },
       ],

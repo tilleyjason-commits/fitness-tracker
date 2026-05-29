@@ -1,5 +1,11 @@
 import type { Exercise, WorkoutExercise, WorkoutHistoryEntry, WorkoutState } from './types';
 
+interface SetUpdate {
+  reps: number;
+  weight: number;
+  rir: number | null;
+}
+
 export function createWorkoutExercise(
   exercise: Exercise,
   sets: number,
@@ -11,7 +17,30 @@ export function createWorkoutExercise(
     targetSets: sets,
     targetReps: reps,
     targetWeight: weight,
-    sets: Array.from({ length: sets }, () => ({ reps, weight, completed: false })),
+    sets: Array.from({ length: sets }, () => ({ reps, weight, rir: null, completed: false })),
+  };
+}
+
+export function updateSetRecord(
+  workout: WorkoutState,
+  exerciseIndex: number,
+  setIndex: number,
+  update: SetUpdate,
+): WorkoutState {
+  return {
+    ...workout,
+    exercises: workout.exercises.map((workoutExercise, exIdx) => {
+      if (exIdx !== exerciseIndex) return workoutExercise;
+
+      return {
+        ...workoutExercise,
+        sets: workoutExercise.sets.map((set, idx) => (
+          idx === setIndex
+            ? { ...set, ...update, completed: true }
+            : set
+        )),
+      };
+    }),
   };
 }
 

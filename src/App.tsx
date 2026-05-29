@@ -4,7 +4,7 @@ import { WorkoutTracker } from './components/WorkoutTracker';
 import { WorkoutHistory } from './components/WorkoutHistory';
 import { RestTimer } from './components/RestTimer';
 import { useLocalStorage } from './hooks/useLocalStorage';
-import { createWorkoutExercise, getWorkoutTotals, logWorkout } from './workoutLog';
+import { createWorkoutExercise, getWorkoutTotals, logWorkout, updateSetRecord } from './workoutLog';
 import type { WorkoutState, Exercise, WorkoutHistoryEntry } from './types';
 import './App.css';
 
@@ -43,6 +43,10 @@ export default function App() {
       });
       return { ...prev, exercises };
     });
+  }, [setWorkout]);
+
+  const logSet = useCallback((exIdx: number, setIdx: number, reps: number, weight: number, rir: number | null) => {
+    setWorkout(prev => updateSetRecord(prev, exIdx, setIdx, { reps, weight, rir }));
   }, [setWorkout]);
 
   const removeExercise = useCallback((exIdx: number) => {
@@ -84,6 +88,7 @@ export default function App() {
         <WorkoutTracker
           exercises={currentWorkout.exercises}
           onToggleSet={toggleSet}
+          onLogSet={logSet}
           onRemoveExercise={removeExercise}
           onClearWorkout={clearWorkout}
           onLogWorkout={handleLogWorkout}
