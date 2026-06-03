@@ -3,7 +3,6 @@ import { ExerciseSelector } from './components/ExerciseSelector';
 import { WorkoutTracker } from './components/WorkoutTracker';
 import { WorkoutHistory } from './components/WorkoutHistory';
 import { RestTimer } from './components/RestTimer';
-import { CardioEquipmentSection } from './components/CardioEquipmentSection';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { createCardioWorkoutExercise, createWorkoutExercise, getWorkoutTotals, logWorkout, updateSetRecord } from './workoutLog';
 import type { CardioEquipment, WorkoutState, Exercise, WorkoutHistoryEntry } from './types';
@@ -130,8 +129,7 @@ export default function App() {
       </header>
 
       <main className="app-main">
-        <ExerciseSelector onAdd={addExercise} />
-        <CardioEquipmentSection onAdd={addCardioExercise} />
+        <ExerciseSelector onAdd={addExercise} onAddCardio={addCardioExercise} />
         <WorkoutTracker
           exercises={currentWorkout.exercises}
           cardioExercises={currentWorkout.cardioExercises}

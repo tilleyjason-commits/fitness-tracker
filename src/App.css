@@ -88,8 +88,7 @@
 .exercise-selector,
 .workout-tracker,
 .workout-history,
-.rest-timer,
-.cardio-section {
+.rest-timer {
   background: linear-gradient(180deg, rgba(18, 26, 20, 0.96), rgba(9, 13, 10, 0.96));
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -704,91 +703,7 @@
   color: var(--danger);
 }
 
-/* ── Cardio equipment ── */
-.cardio-section {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.cardio-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.cardio-count {
-  flex-shrink: 0;
-  padding: 5px 10px;
-  border: 1.5px solid var(--border);
-  border-radius: 99px;
-  background: rgba(183, 255, 60, 0.06);
-  color: var(--accent);
-  font-size: 12px;
-  font-weight: 800;
-}
-
-.cardio-note {
-  color: var(--text);
-  font-size: 14px;
-  line-height: 1.45;
-}
-
-.cardio-list {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 8px;
-}
-
-.cardio-item {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  text-align: left;
-  gap: 12px;
-  padding: 12px;
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.025);
-  transition: border-color 0.12s, background 0.12s, box-shadow 0.12s;
-}
-
-.cardio-item:hover,
-.cardio-item.selected {
-  border-color: var(--accent);
-  background: var(--accent-bg);
-  box-shadow: var(--glow);
-}
-
-.cardio-item h3 {
-  color: var(--text-h);
-  font-size: 15px;
-  margin-bottom: 4px;
-}
-
-.cardio-item p {
-  color: var(--text);
-  font-size: 13px;
-  line-height: 1.4;
-}
-
-.cardio-item span {
-  align-self: flex-start;
-  flex-shrink: 0;
-  padding: 4px 8px;
-  border-radius: 99px;
-  background: var(--accent-bg);
-  color: var(--accent);
-  font-size: 11px;
-  font-weight: 800;
-  white-space: nowrap;
-}
-
-.cardio-add-row {
-  margin-top: 2px;
-}
-
+/* ── Cardio workout cards ── */
 .cardio-workout-card {
   border-color: rgba(183, 255, 60, 0.28);
 }
@@ -800,14 +715,4 @@
   text-align: right;
 }
 
-@media (max-width: 460px) {
-  .cardio-header,
-  .cardio-item {
-    flex-direction: column;
-  }
 
-  .cardio-count,
-  .cardio-item span {
-    align-self: flex-start;
-  }
-}
