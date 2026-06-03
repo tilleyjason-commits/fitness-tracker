@@ -15,7 +15,10 @@ const INITIAL: WorkoutState = { exercises: [], cardioExercises: [], date: today 
 function normalizeWorkout(workout: WorkoutState): WorkoutState {
   return {
     ...workout,
-    cardioExercises: workout.cardioExercises ?? [],
+    cardioExercises: (workout.cardioExercises ?? []).map(cardioExercise => ({
+      ...cardioExercise,
+      distanceMiles: cardioExercise.distanceMiles ?? 0,
+    })),
   };
 }
 
@@ -38,14 +41,14 @@ export default function App() {
     });
   }, [setWorkout]);
 
-  const addCardioExercise = useCallback((equipment: CardioEquipment, durationMinutes: number) => {
+  const addCardioExercise = useCallback((equipment: CardioEquipment, durationMinutes: number, distanceMiles: number) => {
     setWorkout(prev => {
       const base = prev.date === today ? normalizeWorkout(prev) : INITIAL;
       return {
         ...base,
         cardioExercises: [
           ...base.cardioExercises,
-          createCardioWorkoutExercise(equipment, durationMinutes),
+          createCardioWorkoutExercise(equipment, durationMinutes, distanceMiles),
         ],
       };
     });
@@ -100,14 +103,14 @@ export default function App() {
     setWorkout({ exercises: [], cardioExercises: [], date: today });
   }, [currentWorkout, setHistory, setWorkout]);
 
-  const { totalSets, completedSets, totalCardioMinutes } = getWorkoutTotals(currentWorkout);
+  const { totalSets, completedSets, totalCardioMinutes, totalCardioMiles } = getWorkoutTotals(currentWorkout);
 
   return (
     <div className="app">
       <header className="app-header">
         <div className="header-inner">
           <h1 className="app-title">FitTrack</h1>
-          {(totalSets > 0 || totalCardioMinutes > 0) && (
+          {(totalSets > 0 || totalCardioMinutes > 0 || totalCardioMiles > 0) && (
             <div className="header-progress">
               {totalSets > 0 && (
                 <div className="progress-bar">
@@ -116,8 +119,10 @@ export default function App() {
               )}
               <span className="progress-label">
                 {totalSets > 0 ? `${completedSets}/${totalSets} sets` : ''}
-                {totalSets > 0 && totalCardioMinutes > 0 ? ' · ' : ''}
+                {totalSets > 0 && (totalCardioMinutes > 0 || totalCardioMiles > 0) ? ' · ' : ''}
                 {totalCardioMinutes > 0 ? `${totalCardioMinutes} min cardio` : ''}
+                {totalCardioMinutes > 0 && totalCardioMiles > 0 ? ' · ' : ''}
+                {totalCardioMiles > 0 ? `${totalCardioMiles} mi` : ''}
               </span>
             </div>
           )}

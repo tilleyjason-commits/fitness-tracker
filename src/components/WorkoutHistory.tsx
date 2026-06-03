@@ -27,6 +27,10 @@ export function WorkoutHistory({ history }: Props) {
               (sum, cardioExercise) => sum + cardioExercise.durationMinutes,
               0,
             );
+            const totalCardioMiles = entry.totalCardioMiles ?? cardioExercises.reduce(
+              (sum, cardioExercise) => sum + (cardioExercise.distanceMiles ?? 0),
+              0,
+            );
             const totalExercises = entry.exercises.length + cardioExercises.length;
 
             return (
@@ -37,6 +41,7 @@ export function WorkoutHistory({ history }: Props) {
                     <p>
                       {entry.completedSets}/{entry.totalSets} sets completed
                       {totalCardioMinutes > 0 && ` · ${totalCardioMinutes} min cardio`}
+                      {totalCardioMiles > 0 && ` · ${totalCardioMiles} mi`}
                     </p>
                   </div>
                   <span>{totalExercises} exercise{totalExercises === 1 ? '' : 's'}</span>
@@ -55,7 +60,11 @@ export function WorkoutHistory({ history }: Props) {
                   {cardioExercises.map((cardioExercise, index) => (
                     <li key={`${entry.id}-${cardioExercise.equipment.id}-${index}`}>
                       <strong>{cardioExercise.equipment.name}</strong>
-                      <span>{cardioExercise.durationMinutes} min · {cardioExercise.equipment.category}</span>
+                      <span>
+                        {cardioExercise.durationMinutes} min
+                        {(cardioExercise.distanceMiles ?? 0) > 0 && ` · ${cardioExercise.distanceMiles} mi`}
+                        {' · '}{cardioExercise.equipment.category}
+                      </span>
                     </li>
                   ))}
                 </ul>

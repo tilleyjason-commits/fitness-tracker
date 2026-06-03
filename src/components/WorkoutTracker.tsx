@@ -122,7 +122,8 @@ export function WorkoutTracker({
               <div>
                 <span className="exercise-card-name">{cardioExercise.equipment.name}</span>
                 <span className="exercise-card-meta">
-                  {cardioExercise.equipment.category} · {cardioExercise.durationMinutes} min cardio
+                  {cardioExercise.equipment.category} · {cardioExercise.durationMinutes} min
+                  {(cardioExercise.distanceMiles ?? 0) > 0 && ` · ${cardioExercise.distanceMiles} mi`}
                 </span>
               </div>
             </div>

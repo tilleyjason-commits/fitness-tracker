@@ -24,8 +24,9 @@ export function createWorkoutExercise(
 export function createCardioWorkoutExercise(
   equipment: CardioEquipment,
   durationMinutes: number,
+  distanceMiles: number,
 ): CardioWorkoutExercise {
-  return { equipment, durationMinutes };
+  return { equipment, durationMinutes, distanceMiles };
 }
 
 export function updateSetRecord(
@@ -61,8 +62,12 @@ export function getWorkoutTotals(workout: WorkoutState) {
     (sum, cardioExercise) => sum + cardioExercise.durationMinutes,
     0,
   );
+  const totalCardioMiles = (workout.cardioExercises ?? []).reduce(
+    (sum, cardioExercise) => sum + (cardioExercise.distanceMiles ?? 0),
+    0,
+  );
 
-  return { totalSets, completedSets, totalCardioMinutes };
+  return { totalSets, completedSets, totalCardioMinutes, totalCardioMiles };
 }
 
 export function logWorkout(
@@ -82,6 +87,7 @@ export function logWorkout(
     totalSets: totals.totalSets,
     completedSets: totals.completedSets,
     totalCardioMinutes: totals.totalCardioMinutes,
+    totalCardioMiles: totals.totalCardioMiles,
   };
 
   return [entry, ...history];

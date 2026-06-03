@@ -3,16 +3,17 @@ import { CARDIO_EQUIPMENT } from '../data/cardioEquipment';
 import type { CardioEquipment } from '../types';
 
 interface Props {
-  onAdd: (equipment: CardioEquipment, durationMinutes: number) => void;
+  onAdd: (equipment: CardioEquipment, durationMinutes: number, distanceMiles: number) => void;
 }
 
 export function CardioEquipmentSection({ onAdd }: Props) {
   const [selected, setSelected] = useState<CardioEquipment | null>(null);
   const [durationMinutes, setDurationMinutes] = useState(30);
+  const [distanceMiles, setDistanceMiles] = useState(0);
 
   function handleAdd() {
     if (!selected) return;
-    onAdd(selected, durationMinutes);
+    onAdd(selected, durationMinutes, distanceMiles);
     setSelected(null);
   }
 
@@ -27,7 +28,7 @@ export function CardioEquipmentSection({ onAdd }: Props) {
       </div>
 
       <p className="cardio-note">
-        Select common cardio equipment you may find at Anytime Fitness, then choose your target duration.
+        Select common cardio equipment you may find at Anytime Fitness, then choose your target duration and miles.
       </p>
 
       <div className="cardio-list">
@@ -54,6 +55,14 @@ export function CardioEquipmentSection({ onAdd }: Props) {
               <button onClick={() => setDurationMinutes(value => Math.max(5, value - 5))}>−</button>
               <span>{durationMinutes} min</span>
               <button onClick={() => setDurationMinutes(value => Math.min(240, value + 5))}>+</button>
+            </div>
+          </div>
+          <div className="num-input-group">
+            <label>Miles</label>
+            <div className="num-input">
+              <button onClick={() => setDistanceMiles(value => Math.max(0, Number((value - 0.25).toFixed(2))))}>−</button>
+              <span>{distanceMiles} mi</span>
+              <button onClick={() => setDistanceMiles(value => Math.min(50, Number((value + 0.25).toFixed(2))))}>+</button>
             </div>
           </div>
           <button className="add-btn" onClick={handleAdd}>

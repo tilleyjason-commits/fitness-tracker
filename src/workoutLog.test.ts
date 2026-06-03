@@ -35,10 +35,11 @@ describe('createWorkoutExercise', () => {
 });
 
 describe('createCardioWorkoutExercise', () => {
-  it('stores the selected cardio equipment and target duration', () => {
-    expect(createCardioWorkoutExercise(cardio, 30)).toEqual({
+  it('stores the selected cardio equipment, target duration, and target miles', () => {
+    expect(createCardioWorkoutExercise(cardio, 30, 2.5)).toEqual({
       equipment: cardio,
       durationMinutes: 30,
+      distanceMiles: 2.5,
     });
   });
 });
@@ -60,17 +61,18 @@ describe('updateSetRecord', () => {
 });
 
 describe('getWorkoutTotals', () => {
-  it('includes cardio duration totals alongside strength set totals', () => {
+  it('includes cardio duration and mile totals alongside strength set totals', () => {
     const workout: WorkoutState = {
       date: '2026-05-29',
       exercises: [createWorkoutExercise(exercise, 2, 10, 85)],
-      cardioExercises: [createCardioWorkoutExercise(cardio, 30)],
+      cardioExercises: [createCardioWorkoutExercise(cardio, 30, 2.5)],
     };
 
     expect(getWorkoutTotals(workout)).toEqual({
       totalSets: 2,
       completedSets: 0,
       totalCardioMinutes: 30,
+      totalCardioMiles: 2.5,
     });
   });
 });
@@ -103,6 +105,7 @@ describe('logWorkout', () => {
         totalSets: 0,
         completedSets: 0,
         totalCardioMinutes: 0,
+        totalCardioMiles: 0,
       },
     ];
 
@@ -115,6 +118,7 @@ describe('logWorkout', () => {
       totalSets: 2,
       completedSets: 1,
       totalCardioMinutes: 0,
+      totalCardioMiles: 0,
     });
     expect(history[0].exercises[0].targetWeight).toBe(90);
     expect(history[1].id).toBe('older-entry');
@@ -124,16 +128,17 @@ describe('logWorkout', () => {
     const workout: WorkoutState = {
       date: '2026-05-29',
       exercises: [],
-      cardioExercises: [createCardioWorkoutExercise(cardio, 25)],
+      cardioExercises: [createCardioWorkoutExercise(cardio, 25, 1.75)],
     };
 
     const history = logWorkout(workout, [], '2026-05-29T18:00:00.000Z');
 
     expect(history[0]).toMatchObject({
-      cardioExercises: [{ equipment: cardio, durationMinutes: 25 }],
+      cardioExercises: [{ equipment: cardio, durationMinutes: 25, distanceMiles: 1.75 }],
       totalSets: 0,
       completedSets: 0,
       totalCardioMinutes: 25,
+      totalCardioMiles: 1.75,
     });
   });
 

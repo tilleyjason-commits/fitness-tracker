@@ -29,6 +29,7 @@ export interface CardioEquipment {
 export interface CardioWorkoutExercise {
   equipment: CardioEquipment;
   durationMinutes: number;
+  distanceMiles: number;
 }
 
 export interface WorkoutState {
@@ -43,4 +44,5 @@ export interface WorkoutHistoryEntry extends WorkoutState {
   totalSets: number;
   completedSets: number;
   totalCardioMinutes: number;
+  totalCardioMiles: number;
 }
