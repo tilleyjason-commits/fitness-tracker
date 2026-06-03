@@ -19,6 +19,7 @@
   display: flex;
   align-items: center;
   gap: 16px;
+  flex-wrap: wrap;
 }
 
 .app-title {
@@ -57,6 +58,119 @@
   font-weight: 600;
   color: var(--success);
   white-space: nowrap;
+}
+
+.user-menu {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.user-menu button,
+.link-btn {
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  font-weight: 800;
+}
+
+.user-menu button {
+  padding: 5px 0;
+}
+
+/* ── Auth ── */
+.auth-app {
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 16px;
+}
+
+.auth-shell {
+  width: 100%;
+}
+
+.auth-card {
+  display: grid;
+  gap: 18px;
+  background: linear-gradient(180deg, rgba(18, 26, 20, 0.98), rgba(9, 13, 10, 0.98));
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 22px;
+  box-shadow: var(--shadow);
+}
+
+.auth-hero h1 {
+  color: var(--accent);
+  font-size: 42px;
+  letter-spacing: -1.2px;
+  text-shadow: var(--glow);
+}
+
+.auth-hero p {
+  margin-top: 8px;
+  color: var(--text);
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.auth-form h2 {
+  font-size: 20px;
+}
+
+.auth-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--text-h);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.auth-form input {
+  width: 100%;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.035);
+  color: var(--text-h);
+  font: inherit;
+  padding: 12px;
+  outline: none;
+}
+
+.auth-form input:focus {
+  border-color: var(--accent);
+  box-shadow: var(--glow);
+}
+
+.auth-error {
+  color: var(--danger);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.primary-auth-btn {
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: #050806;
+  font-size: 15px;
+  font-weight: 900;
+  padding: 13px 16px;
+}
+
+.link-btn {
+  align-self: center;
+  padding: 6px;
 }
 
 .app-main {

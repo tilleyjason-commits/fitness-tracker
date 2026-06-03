@@ -9,7 +9,7 @@ Build a mobile-friendly React + TypeScript workout tracker for machine exercises
 - Let the user set number of sets and reps.
 - Let the user track completion of each set.
 - Include a rest timer for time between sets with start/pause/reset and quick preset options.
-- Keep scope simple: no backend, no login, no persistence unless easy with localStorage.
+- Keep scope simple: local account sign-in and per-user history can use localStorage; no backend unless explicitly requested.
 
 ## Commands
 - `npm run build` verifies TypeScript and production build.

@@ -46,3 +46,15 @@ export interface WorkoutHistoryEntry extends WorkoutState {
   totalCardioMinutes: number;
   totalCardioMiles: number;
 }
+
+export interface UserAccount {
+  id: string;
+  name: string;
+  username: string;
+  passwordHash: string;
+  createdAt: string;
+}
+
+export interface AuthSession {
+  userId: string;
+}

@@ -3,9 +3,12 @@ import { ExerciseSelector } from './components/ExerciseSelector';
 import { WorkoutTracker } from './components/WorkoutTracker';
 import { WorkoutHistory } from './components/WorkoutHistory';
 import { RestTimer } from './components/RestTimer';
+import { AuthScreen } from './components/AuthScreen';
 import { useLocalStorage } from './hooks/useLocalStorage';
+import { createAccount, signIn } from './auth';
+import { getUserStorageKeys } from './userStorage';
 import { createCardioWorkoutExercise, createWorkoutExercise, getWorkoutTotals, logWorkout, updateSetRecord } from './workoutLog';
-import type { CardioEquipment, WorkoutState, Exercise, WorkoutHistoryEntry } from './types';
+import type { AuthSession, CardioEquipment, WorkoutState, Exercise, UserAccount, WorkoutHistoryEntry } from './types';
 import './App.css';
 
 const today = new Date().toISOString().slice(0, 10);
@@ -21,9 +24,10 @@ function normalizeWorkout(workout: WorkoutState): WorkoutState {
   };
 }
 
-export default function App() {
-  const [workout, setWorkout] = useLocalStorage<WorkoutState>('fitness-tracker-workout', INITIAL);
-  const [history, setHistory] = useLocalStorage<WorkoutHistoryEntry[]>('fitness-tracker-history', []);
+function AuthenticatedApp({ user, onSignOut }: { user: UserAccount; onSignOut: () => void }) {
+  const storageKeys = getUserStorageKeys(user.id);
+  const [workout, setWorkout] = useLocalStorage<WorkoutState>(storageKeys.workout, INITIAL);
+  const [history, setHistory] = useLocalStorage<WorkoutHistoryEntry[]>(storageKeys.history, []);
 
   const currentWorkout = workout.date === today ? normalizeWorkout(workout) : INITIAL;
 
@@ -109,6 +113,10 @@ export default function App() {
       <header className="app-header">
         <div className="header-inner">
           <h1 className="app-title">FitTrack</h1>
+          <div className="user-menu">
+            <span>Signed in as {user.name}</span>
+            <button onClick={onSignOut}>Sign Out</button>
+          </div>
           {(totalSets > 0 || totalCardioMinutes > 0 || totalCardioMiles > 0) && (
             <div className="header-progress">
               {totalSets > 0 && (
@@ -145,4 +153,27 @@ export default function App() {
       </main>
     </div>
   );
+}
+
+export default function App() {
+  const [accounts, setAccounts] = useLocalStorage<UserAccount[]>('fitness-tracker-accounts', []);
+  const [session, setSession] = useLocalStorage<AuthSession | null>('fitness-tracker-session', null);
+  const currentUser = accounts.find(account => account.id === session?.userId) ?? null;
+
+  function handleCreateAccount(name: string, username: string, password: string) {
+    const result = createAccount(accounts, { name, username, password });
+    setAccounts(result.accounts);
+    setSession({ userId: result.account.id });
+  }
+
+  function handleSignIn(username: string, password: string) {
+    const account = signIn(accounts, { username, password });
+    setSession({ userId: account.id });
+  }
+
+  if (!currentUser) {
+    return <AuthScreen onCreateAccount={handleCreateAccount} onSignIn={handleSignIn} />;
+  }
+
+  return <AuthenticatedApp key={currentUser.id} user={currentUser} onSignOut={() => setSession(null)} />;
 }
