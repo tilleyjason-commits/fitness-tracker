@@ -47,6 +47,30 @@ export interface WorkoutHistoryEntry extends WorkoutState {
   totalCardioMiles: number;
 }
 
+export type Weekday = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
+
+export interface RoutineExercise {
+  exercise: Exercise;
+  targetSets: number;
+  targetReps: number;
+  targetWeight: number;
+}
+
+export interface RoutineCardioExercise {
+  equipment: CardioEquipment;
+  durationMinutes: number;
+  distanceMiles: number;
+}
+
+export interface DailyRoutine {
+  day: Weekday;
+  name: string;
+  exercises: RoutineExercise[];
+  cardioExercises: RoutineCardioExercise[];
+}
+
+export type WeeklyRoutines = Record<Weekday, DailyRoutine>;
+
 export interface UserAccount {
   id: string;
   name: string;

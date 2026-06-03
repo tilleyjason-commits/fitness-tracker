@@ -4,11 +4,13 @@ import { WorkoutTracker } from './components/WorkoutTracker';
 import { WorkoutHistory } from './components/WorkoutHistory';
 import { RestTimer } from './components/RestTimer';
 import { AuthScreen } from './components/AuthScreen';
+import { WeeklyRoutines } from './components/WeeklyRoutines';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { createAccount, signIn } from './auth';
 import { getUserStorageKeys } from './userStorage';
+import { addRoutineToWorkout, createEmptyWeeklyRoutines, getTodayWeekday, normalizeWeeklyRoutines, replaceWorkoutWithRoutine } from './routines';
 import { createCardioWorkoutExercise, createWorkoutExercise, getWorkoutTotals, logWorkout, updateSetRecord } from './workoutLog';
-import type { AuthSession, CardioEquipment, WorkoutState, Exercise, UserAccount, WorkoutHistoryEntry } from './types';
+import type { AuthSession, CardioEquipment, DailyRoutine, WorkoutState, Exercise, UserAccount, WorkoutHistoryEntry } from './types';
 import './App.css';
 
 const today = new Date().toISOString().slice(0, 10);
@@ -28,8 +30,11 @@ function AuthenticatedApp({ user, onSignOut }: { user: UserAccount; onSignOut: (
   const storageKeys = getUserStorageKeys(user.id);
   const [workout, setWorkout] = useLocalStorage<WorkoutState>(storageKeys.workout, INITIAL);
   const [history, setHistory] = useLocalStorage<WorkoutHistoryEntry[]>(storageKeys.history, []);
+  const [routines, setRoutines] = useLocalStorage(storageKeys.routines, createEmptyWeeklyRoutines());
 
   const currentWorkout = workout.date === today ? normalizeWorkout(workout) : INITIAL;
+  const weeklyRoutines = normalizeWeeklyRoutines(routines);
+  const todayDay = getTodayWeekday();
 
   const addExercise = useCallback((exercise: Exercise, sets: number, reps: number, weight: number) => {
     setWorkout(prev => {
@@ -106,6 +111,21 @@ function AuthenticatedApp({ user, onSignOut }: { user: UserAccount; onSignOut: (
     setWorkout({ exercises: [], cardioExercises: [], date: today });
   }, [currentWorkout, setHistory, setWorkout]);
 
+  const saveRoutine = useCallback((routine: DailyRoutine) => {
+    setRoutines(prev => ({
+      ...normalizeWeeklyRoutines(prev),
+      [routine.day]: routine,
+    }));
+  }, [setRoutines]);
+
+  const addRoutine = useCallback((routine: DailyRoutine) => {
+    setWorkout(prev => addRoutineToWorkout(routine, prev.date === today ? normalizeWorkout(prev) : INITIAL));
+  }, [setWorkout]);
+
+  const replaceWithRoutine = useCallback((routine: DailyRoutine) => {
+    setWorkout(replaceWorkoutWithRoutine(routine, today));
+  }, [setWorkout]);
+
   const { totalSets, completedSets, totalCardioMinutes, totalCardioMiles } = getWorkoutTotals(currentWorkout);
 
   return (
@@ -137,6 +157,13 @@ function AuthenticatedApp({ user, onSignOut }: { user: UserAccount; onSignOut: (
       </header>
 
       <main className="app-main">
+        <WeeklyRoutines
+          routines={weeklyRoutines}
+          todayDay={todayDay}
+          onSaveRoutine={saveRoutine}
+          onAddRoutineToWorkout={addRoutine}
+          onReplaceWorkoutWithRoutine={replaceWithRoutine}
+        />
         <ExerciseSelector onAdd={addExercise} onAddCardio={addCardioExercise} />
         <WorkoutTracker
           exercises={currentWorkout.exercises}

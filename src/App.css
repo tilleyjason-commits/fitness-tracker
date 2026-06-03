@@ -202,12 +202,149 @@
 .exercise-selector,
 .workout-tracker,
 .workout-history,
-.rest-timer {
+.rest-timer,
+.weekly-routines {
   background: linear-gradient(180deg, rgba(18, 26, 20, 0.96), rgba(9, 13, 10, 0.96));
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 18px;
   box-shadow: var(--shadow-sm);
+}
+
+/* ── Weekly routines ── */
+.weekly-routines {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.routine-header,
+.today-routine-card,
+.routine-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.today-routine-card {
+  align-items: flex-start;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: rgba(183, 255, 60, 0.055);
+  padding: 14px;
+}
+
+.today-routine-card h3,
+.routine-items h3 {
+  margin: 0 0 4px;
+  color: var(--text-h);
+  font-size: 16px;
+}
+
+.today-routine-card p,
+.routine-items p {
+  color: var(--text);
+  font-size: 13px;
+}
+
+.routine-load-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.secondary-btn,
+.save-routine-btn {
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border);
+  font-weight: 900;
+  padding: 10px 12px;
+}
+
+.secondary-btn {
+  background: rgba(255, 255, 255, 0.035);
+  color: var(--text-h);
+}
+
+.save-routine-btn {
+  width: 100%;
+  border: 0;
+  background: var(--accent);
+  color: #050806;
+}
+
+.day-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.routine-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.routine-editor .exercise-selector {
+  padding: 14px;
+  box-shadow: none;
+}
+
+.routine-name-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--text-h);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.routine-name-field input {
+  width: 100%;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.035);
+  color: var(--text-h);
+  font: inherit;
+  padding: 12px;
+  outline: none;
+}
+
+.routine-name-field input:focus {
+  border-color: var(--accent);
+  box-shadow: var(--glow);
+}
+
+.routine-items {
+  display: grid;
+  gap: 8px;
+}
+
+.routine-item {
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.025);
+  padding: 10px 12px;
+}
+
+.routine-item span {
+  color: var(--text-h);
+  font-weight: 800;
+}
+
+.routine-item small {
+  margin-left: auto;
+  color: var(--text);
+  font-weight: 700;
+}
+
+.routine-item button {
+  border: 0;
+  background: transparent;
+  color: var(--danger);
+  font-weight: 900;
 }
 
 /* ── Muscle group tabs ── */

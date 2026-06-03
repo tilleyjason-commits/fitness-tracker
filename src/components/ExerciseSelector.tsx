@@ -5,9 +5,11 @@ import type { CardioEquipment, Exercise } from '../types';
 interface Props {
   onAdd: (exercise: Exercise, sets: number, reps: number, weight: number) => void;
   onAddCardio: (equipment: CardioEquipment, durationMinutes: number, distanceMiles: number) => void;
+  title?: string;
+  addLabel?: string;
 }
 
-export function ExerciseSelector({ onAdd, onAddCardio }: Props) {
+export function ExerciseSelector({ onAdd, onAddCardio, title = 'Add Exercise', addLabel = 'Add to Workout' }: Props) {
   const [group, setGroup] = useState<string>(SELECTOR_GROUPS[0]);
   const [selected, setSelected] = useState<Exercise | CardioEquipment | null>(null);
   const [sets, setSets] = useState(3);
@@ -33,7 +35,7 @@ export function ExerciseSelector({ onAdd, onAddCardio }: Props) {
 
   return (
     <div className="exercise-selector">
-      <h2 className="section-title">Add Exercise</h2>
+      <h2 className="section-title">{title}</h2>
 
       <div className="muscle-tabs">
         {SELECTOR_GROUPS.map(g => (
@@ -109,7 +111,7 @@ export function ExerciseSelector({ onAdd, onAddCardio }: Props) {
             </>
           )}
           <button className="add-btn" onClick={handleAdd}>
-            Add to Workout
+            {addLabel}
           </button>
         </div>
       )}
