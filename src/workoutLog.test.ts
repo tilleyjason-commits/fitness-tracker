@@ -1,11 +1,24 @@
 import { describe, expect, it } from 'vitest';
-import { createWorkoutExercise, logWorkout, updateSetRecord } from './workoutLog';
-import type { Exercise, WorkoutHistoryEntry, WorkoutState } from './types';
+import {
+  createCardioWorkoutExercise,
+  createWorkoutExercise,
+  getWorkoutTotals,
+  logWorkout,
+  updateSetRecord,
+} from './workoutLog';
+import type { CardioEquipment, Exercise, WorkoutHistoryEntry, WorkoutState } from './types';
 
 const exercise: Exercise = {
   id: 'chest-press',
   name: 'Chest Press Machine',
   muscleGroup: 'Chest',
+};
+
+const cardio: CardioEquipment = {
+  id: 'treadmill',
+  name: 'Treadmill',
+  category: 'Running / Walking',
+  description: 'Motorized walking, jogging, and running with speed and incline controls.',
 };
 
 describe('createWorkoutExercise', () => {
@@ -21,11 +34,21 @@ describe('createWorkoutExercise', () => {
   });
 });
 
+describe('createCardioWorkoutExercise', () => {
+  it('stores the selected cardio equipment and target duration', () => {
+    expect(createCardioWorkoutExercise(cardio, 30)).toEqual({
+      equipment: cardio,
+      durationMinutes: 30,
+    });
+  });
+});
+
 describe('updateSetRecord', () => {
   it('updates reps, weight, RIR, and marks the set completed without mutating other sets', () => {
     const workout: WorkoutState = {
       date: '2026-05-29',
       exercises: [createWorkoutExercise(exercise, 2, 10, 85)],
+      cardioExercises: [],
     };
 
     const updated = updateSetRecord(workout, 0, 0, { reps: 9, weight: 90, rir: 2 });
@@ -33,6 +56,22 @@ describe('updateSetRecord', () => {
     expect(updated.exercises[0].sets[0]).toEqual({ reps: 9, weight: 90, rir: 2, completed: true });
     expect(updated.exercises[0].sets[1]).toEqual({ reps: 10, weight: 85, rir: null, completed: false });
     expect(workout.exercises[0].sets[0]).toEqual({ reps: 10, weight: 85, rir: null, completed: false });
+  });
+});
+
+describe('getWorkoutTotals', () => {
+  it('includes cardio duration totals alongside strength set totals', () => {
+    const workout: WorkoutState = {
+      date: '2026-05-29',
+      exercises: [createWorkoutExercise(exercise, 2, 10, 85)],
+      cardioExercises: [createCardioWorkoutExercise(cardio, 30)],
+    };
+
+    expect(getWorkoutTotals(workout)).toEqual({
+      totalSets: 2,
+      completedSets: 0,
+      totalCardioMinutes: 30,
+    });
   });
 });
 
@@ -52,6 +91,7 @@ describe('logWorkout', () => {
           ],
         },
       ],
+      cardioExercises: [],
     };
     const existingHistory: WorkoutHistoryEntry[] = [
       {
@@ -59,8 +99,10 @@ describe('logWorkout', () => {
         date: '2026-05-28',
         loggedAt: '2026-05-28T18:00:00.000Z',
         exercises: [],
+        cardioExercises: [],
         totalSets: 0,
         completedSets: 0,
+        totalCardioMinutes: 0,
       },
     ];
 
@@ -72,13 +114,31 @@ describe('logWorkout', () => {
       loggedAt: '2026-05-29T18:00:00.000Z',
       totalSets: 2,
       completedSets: 1,
+      totalCardioMinutes: 0,
     });
     expect(history[0].exercises[0].targetWeight).toBe(90);
     expect(history[1].id).toBe('older-entry');
   });
 
+  it('adds cardio-only workouts to history', () => {
+    const workout: WorkoutState = {
+      date: '2026-05-29',
+      exercises: [],
+      cardioExercises: [createCardioWorkoutExercise(cardio, 25)],
+    };
+
+    const history = logWorkout(workout, [], '2026-05-29T18:00:00.000Z');
+
+    expect(history[0]).toMatchObject({
+      cardioExercises: [{ equipment: cardio, durationMinutes: 25 }],
+      totalSets: 0,
+      completedSets: 0,
+      totalCardioMinutes: 25,
+    });
+  });
+
   it('does not add an empty workout to history', () => {
-    const emptyWorkout: WorkoutState = { date: '2026-05-29', exercises: [] };
+    const emptyWorkout: WorkoutState = { date: '2026-05-29', exercises: [], cardioExercises: [] };
 
     expect(logWorkout(emptyWorkout, [], '2026-05-29T18:00:00.000Z')).toEqual([]);
   });

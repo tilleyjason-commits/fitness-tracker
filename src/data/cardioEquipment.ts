@@ -1,9 +1,4 @@
-export interface CardioEquipment {
-  id: string;
-  name: string;
-  category: string;
-  description: string;
-}
+import type { CardioEquipment } from '../types';
 
 // Cardio equipment commonly listed or found at Anytime Fitness clubs.
 // Published AF equipment lists include treadmills, elliptical cross-trainers,

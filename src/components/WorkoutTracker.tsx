@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import type { WorkoutExercise } from '../types';
+import type { CardioWorkoutExercise, WorkoutExercise } from '../types';
 
 interface Props {
   exercises: WorkoutExercise[];
+  cardioExercises: CardioWorkoutExercise[];
   onToggleSet: (exIdx: number, setIdx: number) => void;
   onLogSet: (exIdx: number, setIdx: number, reps: number, weight: number, rir: number | null) => void;
   onRemoveExercise: (exIdx: number) => void;
+  onRemoveCardioExercise: (cardioIdx: number) => void;
   onClearWorkout: () => void;
   onLogWorkout: () => void;
 }
@@ -15,7 +17,16 @@ interface ActiveSet {
   setIdx: number;
 }
 
-export function WorkoutTracker({ exercises, onToggleSet, onLogSet, onRemoveExercise, onClearWorkout, onLogWorkout }: Props) {
+export function WorkoutTracker({
+  exercises,
+  cardioExercises,
+  onToggleSet,
+  onLogSet,
+  onRemoveExercise,
+  onRemoveCardioExercise,
+  onClearWorkout,
+  onLogWorkout,
+}: Props) {
   const [activeSet, setActiveSet] = useState<ActiveSet | null>(null);
   const [reps, setReps] = useState(10);
   const [weight, setWeight] = useState(50);
@@ -35,16 +46,17 @@ export function WorkoutTracker({ exercises, onToggleSet, onLogSet, onRemoveExerc
     setActiveSet(null);
   }
 
-  if (exercises.length === 0) {
+  if (exercises.length === 0 && cardioExercises.length === 0) {
     return (
       <div className="empty-workout">
         <div className="empty-icon">🏋️</div>
-        <p>No exercises yet. Add one above to get started.</p>
+        <p>No exercises yet. Add strength or cardio above to get started.</p>
       </div>
     );
   }
 
   const activeExercise = activeSet ? exercises[activeSet.exIdx] : null;
+  const totalItems = exercises.length + cardioExercises.length;
 
   return (
     <div className="workout-tracker">
@@ -101,6 +113,28 @@ export function WorkoutTracker({ exercises, onToggleSet, onLogSet, onRemoveExerc
           </div>
         );
       })}
+
+      {cardioExercises.map((cardioExercise, cardioIdx) => (
+        <div key={`${cardioExercise.equipment.id}-${cardioIdx}`} className="exercise-card cardio-workout-card">
+          <div className="exercise-card-header">
+            <div className="exercise-title-row">
+              <span className="exercise-number">{exercises.length + cardioIdx + 1}</span>
+              <div>
+                <span className="exercise-card-name">{cardioExercise.equipment.name}</span>
+                <span className="exercise-card-meta">
+                  {cardioExercise.equipment.category} · {cardioExercise.durationMinutes} min cardio
+                </span>
+              </div>
+            </div>
+            <div className="exercise-card-actions">
+              <span className="set-progress">Cardio</span>
+              <button className="remove-btn" onClick={() => onRemoveCardioExercise(cardioIdx)} aria-label="Remove cardio">✕</button>
+            </div>
+          </div>
+        </div>
+      ))}
+
+      <p className="workout-item-count">{totalItems} planned item{totalItems === 1 ? '' : 's'}</p>
 
       {activeSet && activeExercise && (
         <div className="set-logger" role="dialog" aria-label="Log set">

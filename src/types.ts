@@ -19,8 +19,21 @@ export interface WorkoutExercise {
   targetWeight: number;
 }
 
+export interface CardioEquipment {
+  id: string;
+  name: string;
+  category: string;
+  description: string;
+}
+
+export interface CardioWorkoutExercise {
+  equipment: CardioEquipment;
+  durationMinutes: number;
+}
+
 export interface WorkoutState {
   exercises: WorkoutExercise[];
+  cardioExercises: CardioWorkoutExercise[];
   date: string;
 }
 
@@ -29,4 +42,5 @@ export interface WorkoutHistoryEntry extends WorkoutState {
   loggedAt: string;
   totalSets: number;
   completedSets: number;
+  totalCardioMinutes: number;
 }

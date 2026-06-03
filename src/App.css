@@ -742,13 +742,23 @@
 }
 
 .cardio-item {
+  width: 100%;
   display: flex;
   justify-content: space-between;
+  text-align: left;
   gap: 12px;
   padding: 12px;
   border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, 0.025);
+  transition: border-color 0.12s, background 0.12s, box-shadow 0.12s;
+}
+
+.cardio-item:hover,
+.cardio-item.selected {
+  border-color: var(--accent);
+  background: var(--accent-bg);
+  box-shadow: var(--glow);
 }
 
 .cardio-item h3 {
@@ -773,6 +783,21 @@
   font-size: 11px;
   font-weight: 800;
   white-space: nowrap;
+}
+
+.cardio-add-row {
+  margin-top: 2px;
+}
+
+.cardio-workout-card {
+  border-color: rgba(183, 255, 60, 0.28);
+}
+
+.workout-item-count {
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: right;
 }
 
 @media (max-width: 460px) {
