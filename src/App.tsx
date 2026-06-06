@@ -28,10 +28,13 @@ function normalizeWorkout(workout: WorkoutState): WorkoutState {
 
 function AuthenticatedApp({ user, onSignOut }: { user: UserAccount; onSignOut: () => void }) {
   const [page, setPage] = useState<'main' | 'presets'>('main');
+  const [showRestTimer, setShowRestTimer] = useState(false);
+  const [restTimerKey, setRestTimerKey] = useState(0);
   const storageKeys = getUserStorageKeys(user.id);
   const [workout, setWorkout] = useLocalStorage<WorkoutState>(storageKeys.workout, INITIAL);
   const [history, setHistory] = useLocalStorage<WorkoutHistoryEntry[]>(storageKeys.history, []);
   const [routines, setRoutines] = useLocalStorage(storageKeys.routines, createEmptyWeeklyRoutines());
+  const [restTimerDefaultSeconds, setRestTimerDefaultSeconds] = useLocalStorage<number>(`fitness-tracker-rest-timer:${user.id}`, 90);
 
   const currentWorkout = workout.date === today ? normalizeWorkout(workout) : INITIAL;
   const weeklyRoutines = normalizeWeeklyRoutines(routines);
@@ -65,6 +68,8 @@ function AuthenticatedApp({ user, onSignOut }: { user: UserAccount; onSignOut: (
 
   const logSet = useCallback((exIdx: number, setIdx: number, reps: number, weight: number, rir: number | null) => {
     setWorkout(prev => updateSetRecord(normalizeWorkout(prev), exIdx, setIdx, { reps, weight, rir }));
+    setShowRestTimer(true);
+    setRestTimerKey(key => key + 1);
   }, [setWorkout]);
 
   const removeExercise = useCallback((exIdx: number) => {
@@ -135,7 +140,6 @@ function AuthenticatedApp({ user, onSignOut }: { user: UserAccount; onSignOut: (
 
       {page === 'main' ? (
         <main className="app-main">
-          <ExerciseSelector onAdd={addExercise} onAddCardio={addCardioExercise} />
           <WorkoutTracker
             exercises={currentWorkout.exercises}
             cardioExercises={currentWorkout.cardioExercises}
@@ -146,7 +150,7 @@ function AuthenticatedApp({ user, onSignOut }: { user: UserAccount; onSignOut: (
             onClearWorkout={clearWorkout}
             onLogWorkout={handleLogWorkout}
           />
-          <RestTimer />
+          <ExerciseSelector onAdd={addExercise} onAddCardio={addCardioExercise} />
           <WorkoutHistory history={history} />
         </main>
       ) : (
@@ -159,6 +163,15 @@ function AuthenticatedApp({ user, onSignOut }: { user: UserAccount; onSignOut: (
             onReplaceWorkoutWithRoutine={replaceWithRoutine}
           />
         </main>
+      )}
+      {showRestTimer && (
+        <RestTimer
+          modal
+          autoStartKey={restTimerKey}
+          initialSeconds={restTimerDefaultSeconds}
+          onSaveDefault={setRestTimerDefaultSeconds}
+          onClose={() => setShowRestTimer(false)}
+        />
       )}
     </div>
   );

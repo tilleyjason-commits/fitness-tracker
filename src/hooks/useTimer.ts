@@ -24,7 +24,12 @@ export function useTimer() {
     };
   }, [running]);
 
-  const start = useCallback(() => setRunning(true), []);
+  const start = useCallback((val?: number) => {
+    if (typeof val === 'number') {
+      setSeconds(val);
+    }
+    setRunning(true);
+  }, []);
   const pause = useCallback(() => setRunning(false), []);
   const reset = useCallback((val?: number) => {
     setRunning(false);
