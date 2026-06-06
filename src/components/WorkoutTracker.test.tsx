@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { WorkoutTracker } from './WorkoutTracker';
 import type { Exercise, WorkoutExercise } from '../types';
 
@@ -55,5 +55,25 @@ describe('WorkoutTracker', () => {
   it('shows the planned item count', () => {
     render(<WorkoutTracker {...defaultProps} exercises={[makeExercise()]} />);
     expect(screen.getByText((c) => c.includes('planned item'))).toBeInTheDocument();
+  });
+
+  it('lets the user manually enter an exact logged weight while plus and minus adjust by five', () => {
+    const onLogSet = vi.fn();
+    render(<WorkoutTracker {...defaultProps} exercises={[makeExercise()]} onLogSet={onLogSet} />);
+
+    fireEvent.click(screen.getByRole('button', { name: /Set 1 incomplete/i }));
+    const weightInput = screen.getByLabelText('Weight');
+
+    fireEvent.change(weightInput, { target: { value: '4' } });
+    expect(weightInput).toHaveValue(4);
+
+    fireEvent.click(screen.getByRole('button', { name: /increase weight/i }));
+    expect(weightInput).toHaveValue(9);
+
+    fireEvent.click(screen.getByRole('button', { name: /decrease weight/i }));
+    expect(weightInput).toHaveValue(4);
+
+    fireEvent.click(screen.getByRole('button', { name: /Log Set/i }));
+    expect(onLogSet).toHaveBeenCalledWith(0, 0, 10, 4, 2);
   });
 });

@@ -484,6 +484,35 @@
   color: var(--text-h);
 }
 
+.num-input-field {
+  width: 54px;
+  height: 34px;
+  border: 0;
+  border-left: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.035);
+  color: var(--text-h);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 800;
+  text-align: center;
+  outline: none;
+}
+
+.num-input-field:focus {
+  background: rgba(183, 255, 60, 0.08);
+  box-shadow: inset 0 0 0 1.5px var(--accent);
+}
+
+.num-input-field::-webkit-outer-spin-button,
+.num-input-field::-webkit-inner-spin-button {
+  margin: 0;
+}
+
+.num-input-unit {
+  min-width: auto !important;
+  padding: 0 8px 0 4px;
+}
+
 .add-btn {
   margin-left: auto;
   padding: 9px 18px;

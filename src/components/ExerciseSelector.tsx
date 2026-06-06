@@ -101,11 +101,21 @@ export function ExerciseSelector({ onAdd, onAddCardio, title = 'Add Exercise', a
                 </div>
               </div>
               <div className="num-input-group">
-                <label>Weight</label>
+                <label htmlFor="exercise-weight-input">Weight</label>
                 <div className="num-input">
-                  <button onClick={() => setWeight(w => Math.max(0, w - 5))}>−</button>
-                  <span>{weight} lb</span>
-                  <button onClick={() => setWeight(w => Math.min(999, w + 5))}>+</button>
+                  <button aria-label="Decrease weight" onClick={() => setWeight(w => Math.max(0, w - 5))}>−</button>
+                  <input
+                    id="exercise-weight-input"
+                    className="num-input-field weight-input-field"
+                    type="number"
+                    min="0"
+                    max="999"
+                    inputMode="numeric"
+                    value={weight}
+                    onChange={event => setWeight(Math.min(999, Math.max(0, Number(event.target.value) || 0)))}
+                  />
+                  <span className="num-input-unit">lb</span>
+                  <button aria-label="Increase weight" onClick={() => setWeight(w => Math.min(999, w + 5))}>+</button>
                 </div>
               </div>
             </>

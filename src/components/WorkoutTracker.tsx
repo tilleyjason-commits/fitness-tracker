@@ -158,11 +158,21 @@ export function WorkoutTracker({
                 </div>
               </div>
               <div className="num-input-group">
-                <label>Weight</label>
+                <label htmlFor="logged-weight-input">Weight</label>
                 <div className="num-input compact">
-                  <button onClick={() => setWeight(value => Math.max(0, value - 5))}>−</button>
-                  <span>{weight} lb</span>
-                  <button onClick={() => setWeight(value => Math.min(999, value + 5))}>+</button>
+                  <button aria-label="Decrease weight" onClick={() => setWeight(value => Math.max(0, value - 5))}>−</button>
+                  <input
+                    id="logged-weight-input"
+                    className="num-input-field weight-input-field"
+                    type="number"
+                    min="0"
+                    max="999"
+                    inputMode="numeric"
+                    value={weight}
+                    onChange={event => setWeight(Math.min(999, Math.max(0, Number(event.target.value) || 0)))}
+                  />
+                  <span className="num-input-unit">lb</span>
+                  <button aria-label="Increase weight" onClick={() => setWeight(value => Math.min(999, value + 5))}>+</button>
                 </div>
               </div>
               <div className="num-input-group">
