@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ExerciseSelector } from './ExerciseSelector';
 import { routineHasItems, routineItemFromCardio, routineItemFromExercise, WEEKDAYS } from '../routines';
 import type { CardioEquipment, DailyRoutine, Exercise, RoutineCardioExercise, RoutineExercise, Weekday, WeeklyRoutines } from '../types';
@@ -23,8 +23,18 @@ export function WeeklyRoutines({
   const [name, setName] = useState(initialRoutine.name);
   const [exercises, setExercises] = useState<RoutineExercise[]>(initialRoutine.exercises);
   const [cardioExercises, setCardioExercises] = useState<RoutineCardioExercise[]>(initialRoutine.cardioExercises);
+  const [showSaveConfirmation, setShowSaveConfirmation] = useState(false);
+  const saveConfirmationTimeoutRef = useRef<number | null>(null);
 
   const todayRoutine = routines[todayDay];
+
+  useEffect(() => {
+    return () => {
+      if (saveConfirmationTimeoutRef.current !== null) {
+        window.clearTimeout(saveConfirmationTimeoutRef.current);
+      }
+    };
+  }, []);
 
   function selectDay(day: Weekday) {
     const routine = routines[day];
@@ -41,6 +51,15 @@ export function WeeklyRoutines({
       exercises,
       cardioExercises,
     });
+
+    setShowSaveConfirmation(true);
+    if (saveConfirmationTimeoutRef.current !== null) {
+      window.clearTimeout(saveConfirmationTimeoutRef.current);
+    }
+    saveConfirmationTimeoutRef.current = window.setTimeout(() => {
+      setShowSaveConfirmation(false);
+      saveConfirmationTimeoutRef.current = null;
+    }, 2500);
   }
 
   function addExercise(exercise: Exercise, sets: number, reps: number, weight: number) {
@@ -129,6 +148,11 @@ export function WeeklyRoutines({
         </div>
 
         <button className="save-routine-btn" onClick={handleSave}>Save {selectedDay} Preset</button>
+        {showSaveConfirmation && (
+          <div className="preset-saved-popup" role="status" aria-live="polite">
+            Preset Saved
+          </div>
+        )}
       </div>
     </section>
   );

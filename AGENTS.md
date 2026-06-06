@@ -39,6 +39,7 @@
 1. Branch → edits → TDD → implement → npm test/lint/build → smoke → user confirms → merge to main → push
 2. Pre-commit hook enforces test/lint/build gate
 3. Scripted smoke test available via `npm run smoke`
+4. Private phone review before commit is available via `npm run phone-preview`; it builds the app, prints the PC's Tailscale URL, and serves Vite preview over the private Tailscale network for cellular phone testing without public tunnels
 
 ## Directory Layout
 ```

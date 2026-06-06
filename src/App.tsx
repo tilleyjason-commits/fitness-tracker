@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { ExerciseSelector } from './components/ExerciseSelector';
 import { WorkoutTracker } from './components/WorkoutTracker';
 import { WorkoutHistory } from './components/WorkoutHistory';
@@ -27,6 +27,7 @@ function normalizeWorkout(workout: WorkoutState): WorkoutState {
 }
 
 function AuthenticatedApp({ user, onSignOut }: { user: UserAccount; onSignOut: () => void }) {
+  const [page, setPage] = useState<'main' | 'presets'>('main');
   const storageKeys = getUserStorageKeys(user.id);
   const [workout, setWorkout] = useLocalStorage<WorkoutState>(storageKeys.workout, INITIAL);
   const [history, setHistory] = useLocalStorage<WorkoutHistoryEntry[]>(storageKeys.history, []);
@@ -39,42 +40,26 @@ function AuthenticatedApp({ user, onSignOut }: { user: UserAccount; onSignOut: (
   const addExercise = useCallback((exercise: Exercise, sets: number, reps: number, weight: number) => {
     setWorkout(prev => {
       const base = prev.date === today ? normalizeWorkout(prev) : INITIAL;
-      return {
-        ...base,
-        exercises: [
-          ...base.exercises,
-          createWorkoutExercise(exercise, sets, reps, weight),
-        ],
-      };
+      return { ...base, exercises: [...base.exercises, createWorkoutExercise(exercise, sets, reps, weight)] };
     });
   }, [setWorkout]);
 
   const addCardioExercise = useCallback((equipment: CardioEquipment, durationMinutes: number, distanceMiles: number) => {
     setWorkout(prev => {
       const base = prev.date === today ? normalizeWorkout(prev) : INITIAL;
-      return {
-        ...base,
-        cardioExercises: [
-          ...base.cardioExercises,
-          createCardioWorkoutExercise(equipment, durationMinutes, distanceMiles),
-        ],
-      };
+      return { ...base, cardioExercises: [...base.cardioExercises, createCardioWorkoutExercise(equipment, durationMinutes, distanceMiles)] };
     });
   }, [setWorkout]);
 
   const toggleSet = useCallback((exIdx: number, setIdx: number) => {
     setWorkout(prev => {
       const base = normalizeWorkout(prev);
-      const exercises = base.exercises.map((we, i) => {
-        if (i !== exIdx) return we;
-        return {
-          ...we,
-          sets: we.sets.map((s, j) =>
-            j === setIdx ? { ...s, completed: !s.completed } : s
-          ),
-        };
-      });
-      return { ...base, exercises };
+      return {
+        ...base,
+        exercises: base.exercises.map((we, i) =>
+          i !== exIdx ? we : { ...we, sets: we.sets.map((s, j) => j === setIdx ? { ...s, completed: !s.completed } : s) }
+        ),
+      };
     });
   }, [setWorkout]);
 
@@ -85,20 +70,14 @@ function AuthenticatedApp({ user, onSignOut }: { user: UserAccount; onSignOut: (
   const removeExercise = useCallback((exIdx: number) => {
     setWorkout(prev => {
       const base = normalizeWorkout(prev);
-      return {
-        ...base,
-        exercises: base.exercises.filter((_, i) => i !== exIdx),
-      };
+      return { ...base, exercises: base.exercises.filter((_, i) => i !== exIdx) };
     });
   }, [setWorkout]);
 
   const removeCardioExercise = useCallback((cardioIdx: number) => {
     setWorkout(prev => {
       const base = normalizeWorkout(prev);
-      return {
-        ...base,
-        cardioExercises: base.cardioExercises.filter((_, i) => i !== cardioIdx),
-      };
+      return { ...base, cardioExercises: base.cardioExercises.filter((_, i) => i !== cardioIdx) };
     });
   }, [setWorkout]);
 
@@ -112,10 +91,7 @@ function AuthenticatedApp({ user, onSignOut }: { user: UserAccount; onSignOut: (
   }, [currentWorkout, setHistory, setWorkout]);
 
   const saveRoutine = useCallback((routine: DailyRoutine) => {
-    setRoutines(prev => ({
-      ...normalizeWeeklyRoutines(prev),
-      [routine.day]: routine,
-    }));
+    setRoutines(prev => ({ ...normalizeWeeklyRoutines(prev), [routine.day]: routine }));
   }, [setRoutines]);
 
   const addRoutine = useCallback((routine: DailyRoutine) => {
@@ -132,23 +108,24 @@ function AuthenticatedApp({ user, onSignOut }: { user: UserAccount; onSignOut: (
     <div className="app">
       <header className="app-header">
         <div className="header-inner">
-          <h1 className="app-title">FitTrack</h1>
+          <div className="header-left">
+            <h1 className="app-title">FitTrack</h1>
+            <button className="page-nav-btn" onClick={() => setPage(page === 'main' ? 'presets' : 'main')}>
+              {page === 'main' ? '\u2699 Setup Presets' : '\u2190 Back to Workout'}
+            </button>
+          </div>
           <div className="user-menu">
             <span>Signed in as {user.name}</span>
             <button onClick={onSignOut}>Sign Out</button>
           </div>
-          {(totalSets > 0 || totalCardioMinutes > 0 || totalCardioMiles > 0) && (
+          {page === 'main' && (totalSets > 0 || totalCardioMinutes > 0 || totalCardioMiles > 0) && (
             <div className="header-progress">
-              {totalSets > 0 && (
-                <div className="progress-bar">
-                  <div className="progress-fill" style={{ width: `${(completedSets / totalSets) * 100}%` }} />
-                </div>
-              )}
+              {totalSets > 0 && <div className="progress-bar"><div className="progress-fill" style={{ width: `${(completedSets / totalSets) * 100}%` }} /></div>}
               <span className="progress-label">
                 {totalSets > 0 ? `${completedSets}/${totalSets} sets` : ''}
-                {totalSets > 0 && (totalCardioMinutes > 0 || totalCardioMiles > 0) ? ' · ' : ''}
+                {totalSets > 0 && (totalCardioMinutes > 0 || totalCardioMiles > 0) ? ' \u00b7 ' : ''}
                 {totalCardioMinutes > 0 ? `${totalCardioMinutes} min cardio` : ''}
-                {totalCardioMinutes > 0 && totalCardioMiles > 0 ? ' · ' : ''}
+                {totalCardioMinutes > 0 && totalCardioMiles > 0 ? ' \u00b7 ' : ''}
                 {totalCardioMiles > 0 ? `${totalCardioMiles} mi` : ''}
               </span>
             </div>
@@ -156,28 +133,33 @@ function AuthenticatedApp({ user, onSignOut }: { user: UserAccount; onSignOut: (
         </div>
       </header>
 
-      <main className="app-main">
-        <WeeklyRoutines
-          routines={weeklyRoutines}
-          todayDay={todayDay}
-          onSaveRoutine={saveRoutine}
-          onAddRoutineToWorkout={addRoutine}
-          onReplaceWorkoutWithRoutine={replaceWithRoutine}
-        />
-        <ExerciseSelector onAdd={addExercise} onAddCardio={addCardioExercise} />
-        <WorkoutTracker
-          exercises={currentWorkout.exercises}
-          cardioExercises={currentWorkout.cardioExercises}
-          onToggleSet={toggleSet}
-          onLogSet={logSet}
-          onRemoveExercise={removeExercise}
-          onRemoveCardioExercise={removeCardioExercise}
-          onClearWorkout={clearWorkout}
-          onLogWorkout={handleLogWorkout}
-        />
-        <RestTimer />
-        <WorkoutHistory history={history} />
-      </main>
+      {page === 'main' ? (
+        <main className="app-main">
+          <ExerciseSelector onAdd={addExercise} onAddCardio={addCardioExercise} />
+          <WorkoutTracker
+            exercises={currentWorkout.exercises}
+            cardioExercises={currentWorkout.cardioExercises}
+            onToggleSet={toggleSet}
+            onLogSet={logSet}
+            onRemoveExercise={removeExercise}
+            onRemoveCardioExercise={removeCardioExercise}
+            onClearWorkout={clearWorkout}
+            onLogWorkout={handleLogWorkout}
+          />
+          <RestTimer />
+          <WorkoutHistory history={history} />
+        </main>
+      ) : (
+        <main className="app-main">
+          <WeeklyRoutines
+            routines={weeklyRoutines}
+            todayDay={todayDay}
+            onSaveRoutine={saveRoutine}
+            onAddRoutineToWorkout={addRoutine}
+            onReplaceWorkoutWithRoutine={replaceWithRoutine}
+          />
+        </main>
+      )}
     </div>
   );
 }

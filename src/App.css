@@ -275,6 +275,20 @@
   color: #050806;
 }
 
+.preset-saved-popup {
+  align-self: center;
+  border: 1.5px solid rgba(183, 255, 60, 0.55);
+  border-radius: 999px;
+  background: rgba(183, 255, 60, 0.14);
+  box-shadow: var(--glow);
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  padding: 10px 18px;
+  text-align: center;
+}
+
 .day-tabs {
   display: flex;
   flex-wrap: wrap;
@@ -967,3 +981,28 @@
 }
 
 
+
+/* ── Page Navigation ── */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.page-nav-btn {
+  background: var(--surface);
+  color: var(--accent);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.page-nav-btn:hover {
+  background: var(--border);
+  border-color: var(--accent);
+}
