@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import App from './App';
+import { createEmptyWeeklyRoutines, getTodayWeekday, routineItemFromExercise } from './routines';
 
 const today = new Date().toISOString().slice(0, 10);
 
@@ -26,6 +27,18 @@ const account = {
   createdAt: '2026-06-06T00:00:00.000Z',
 };
 
+function seedTodayRoutine() {
+  const weekday = getTodayWeekday();
+  const routines = createEmptyWeeklyRoutines();
+  routines[weekday] = {
+    day: weekday,
+    name: `${weekday} Strength`,
+    exercises: [routineItemFromExercise({ id: 'lat-pulldown', name: 'Lat Pulldown', muscleGroup: 'Back' }, 3, 10, 90)],
+    cardioExercises: [],
+  };
+  localStorage.setItem(`fitness-tracker-routines:${account.id}`, JSON.stringify(routines));
+}
+
 describe('App page navigation', () => {
   beforeEach(() => {
     localStorage.clear();
@@ -40,6 +53,16 @@ describe('App page navigation', () => {
     expect(screen.getByText(/No exercises yet/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Setup Presets/i })).toBeInTheDocument();
     expect(screen.queryByText('Weekly Routines')).not.toBeInTheDocument();
+  });
+
+  it('automatically loads the saved preset for today as today workout', async () => {
+    seedTodayRoutine();
+
+    render(<App />);
+
+    await waitFor(() => expect(screen.getByText('Lat Pulldown')).toBeInTheDocument());
+    expect(screen.getByText('Back · 3 × 10 · 90 lb')).toBeInTheDocument();
+    expect(screen.queryByText(/No exercises yet/i)).not.toBeInTheDocument();
   });
 
   it('lets the user open preset setup and return to the workout page', () => {

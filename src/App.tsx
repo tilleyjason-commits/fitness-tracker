@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ExerciseSelector } from './components/ExerciseSelector';
 import { WorkoutTracker } from './components/WorkoutTracker';
 import { WorkoutHistory } from './components/WorkoutHistory';
@@ -34,11 +34,24 @@ function AuthenticatedApp({ user, onSignOut }: { user: UserAccount; onSignOut: (
   const [workout, setWorkout] = useLocalStorage<WorkoutState>(storageKeys.workout, INITIAL);
   const [history, setHistory] = useLocalStorage<WorkoutHistoryEntry[]>(storageKeys.history, []);
   const [routines, setRoutines] = useLocalStorage(storageKeys.routines, createEmptyWeeklyRoutines());
+  const [autoLoadedRoutineDate, setAutoLoadedRoutineDate] = useLocalStorage<string | null>(`fitness-tracker-auto-loaded-routine:${user.id}`, null);
   const [restTimerDefaultSeconds, setRestTimerDefaultSeconds] = useLocalStorage<number>(`fitness-tracker-rest-timer:${user.id}`, 90);
 
   const currentWorkout = workout.date === today ? normalizeWorkout(workout) : INITIAL;
   const weeklyRoutines = normalizeWeeklyRoutines(routines);
   const todayDay = getTodayWeekday();
+  const todayRoutine = weeklyRoutines[todayDay];
+
+  useEffect(() => {
+    const current = workout.date === today ? normalizeWorkout(workout) : INITIAL;
+    const currentHasItems = current.exercises.length > 0 || current.cardioExercises.length > 0;
+    const todayRoutineHasItems = todayRoutine.exercises.length > 0 || todayRoutine.cardioExercises.length > 0;
+
+    if (!todayRoutineHasItems || currentHasItems || autoLoadedRoutineDate === today) return;
+
+    setWorkout(replaceWorkoutWithRoutine(todayRoutine, today));
+    setAutoLoadedRoutineDate(today);
+  }, [autoLoadedRoutineDate, setAutoLoadedRoutineDate, setWorkout, todayRoutine, workout]);
 
   const addExercise = useCallback((exercise: Exercise, sets: number, reps: number, weight: number) => {
     setWorkout(prev => {
